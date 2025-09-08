@@ -1,1 +1,4 @@
+# 10000 characters
 MAX_CONTENT_CHUNK_SIZE = 10000
+# 30 seconds
+TIMEOUT = 30
