@@ -1,5 +1,7 @@
 from os import listdir, path
 
+from google.genai import types
+
 def unsafe_get_files_info(working_directory, directory="."):
   working_dir_abs_path = path.abspath(working_directory)
   target_dir_abs_path = path.abspath(path.join(working_directory, directory))
@@ -28,3 +30,17 @@ def get_files_info(working_directory, directory="."):
     return unsafe_get_files_info(working_directory, directory)
   except Exception as error:
     return f"Error listing files: {error}"
+
+schema_get_files_info = types.FunctionDeclaration(
+    name="get_files_info",
+    description="Lists files in the specified directory along with their sizes, constrained to the working directory.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "directory": types.Schema(
+                type=types.Type.STRING,
+                description="The directory to list files from, relative to the working directory. If not provided, lists files in the working directory itself.",
+            ),
+        },
+    ),
+)
