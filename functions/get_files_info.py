@@ -2,7 +2,7 @@ from os import listdir, path
 
 from google.genai import types
 
-def unsafe_get_files_info(working_directory, directory="."):
+def unsafe_get_files_info(working_directory: str, directory: str = "."):
   working_dir_abs_path = path.abspath(working_directory)
   target_dir_abs_path = path.abspath(path.join(working_directory, directory))
   
@@ -25,7 +25,7 @@ def unsafe_get_files_info(working_directory, directory="."):
 
   return "\n".join(result)
 
-def get_files_info(working_directory, directory="."):
+def get_files_info(working_directory: str, directory: str = "."):
   try:
     return unsafe_get_files_info(working_directory, directory)
   except Exception as error:

@@ -4,7 +4,7 @@ from google.genai import types
 
 from config import MAX_CONTENT_CHUNK_SIZE
 
-def get_file_content_unsafe(working_directory, file_path):
+def get_file_content_unsafe(working_directory: str, file_path: str):
   working_dir_abs_path = path.abspath(working_directory)
   target_file_path_abs_path = path.abspath(path.join(working_directory, file_path))
   
@@ -24,7 +24,7 @@ def get_file_content_unsafe(working_directory, file_path):
     
   return result
   
-def get_file_content(working_directory, file_path):
+def get_file_content(working_directory: str, file_path: str):
   try:
     return get_file_content_unsafe(working_directory, file_path)
   except Exception as error:

@@ -2,7 +2,7 @@ from os import mkdir, path
 
 from google.genai import types
 
-def write_file_unsafe(working_directory, file_path, content):
+def write_file_unsafe(working_directory: str, file_path: str, content: str):
   working_dir_abs_path = path.abspath(working_directory)
   target_file_path_abs_path = path.abspath(path.join(working_directory, file_path))
   
@@ -21,7 +21,7 @@ def write_file_unsafe(working_directory, file_path, content):
 
   return f'Successfully wrote to "{file_path}" ({len(content)} characters written)'
   
-def write_file(working_directory, file_path, content):
+def write_file(working_directory: str, file_path: str, content: str):
   try: 
     return write_file_unsafe(working_directory, file_path, content)
   except Exception as error:

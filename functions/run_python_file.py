@@ -5,7 +5,7 @@ from google.genai import types
 
 from config import TIMEOUT
 
-def run_python_file_unsafe(working_directory, file_path, args=[]):
+def run_python_file_unsafe(working_directory: str, file_path: str, args: list = []):
   working_dir_abs_path = path.abspath(working_directory)
   target_file_abs_path = path.abspath(path.join(working_directory, file_path))
   target_file_dir_abs_path = path.dirname(target_file_abs_path)
@@ -37,7 +37,7 @@ def run_python_file_unsafe(working_directory, file_path, args=[]):
     
   return "\n".join(result)
   
-def run_python_file(working_directory, file_path, args=[]):
+def run_python_file(working_directory: str, file_path: str, args: list = []):
   try:
     return run_python_file_unsafe(working_directory, file_path, args)
   except Exception as error:
