@@ -1,6 +1,8 @@
 from os import path
 import subprocess
 
+from google.genai import types
+
 from config import TIMEOUT
 
 def run_python_file_unsafe(working_directory, file_path, args=[]):
@@ -40,4 +42,25 @@ def run_python_file(working_directory, file_path, args=[]):
     return run_python_file_unsafe(working_directory, file_path, args)
   except Exception as error:
     return f"Error: executing Python file: {error}"
-    
+
+schema_run_python_file = types.FunctionDeclaration(
+  name="run_python_file",
+  description="Runs a Python file at the given path, constrained to the working directory.",
+  parameters=types.Schema(
+    type=types.Type.OBJECT,
+    properties={
+      "file_path": types.Schema(
+        type=types.Type.STRING,
+        description="The path to the Python file to run, relative to the working directory.",
+      ),
+      "args": types.Schema(
+        type=types.Type.ARRAY,
+        description="The arguments to pass to the Python file.",
+        items=types.Schema(
+          type=types.Type.STRING,
+        ),
+        default=[]
+      ),
+    }
+  )
+)
