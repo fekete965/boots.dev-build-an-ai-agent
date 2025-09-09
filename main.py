@@ -1,84 +1,36 @@
-import os
-import sys
+from sys import exit
 from google import genai
-from google.genai import types
-from dotenv import load_dotenv
 
-from functions.get_file_content import schema_get_file_content
-from functions.get_files_info import schema_get_files_info
-from functions.run_python_file import schema_run_python_file
-from functions.write_file import schema_write_file
+from env_variables import EnvVariables
+from run_agent import run_agent
+from system_args import SystemArgs
 
-# Load the environment variables
-load_dotenv()
-
-if (len(sys.argv) < 2):
-    print("Usage: python main.py <user_prompt>")
-    sys.exit(1)
-
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL")
-
-user_prompt = sys.argv[1]
-if user_prompt is None:
-    print("Usage: python main.py <user_prompt>")
-    sys.exit(1)
-
-has_verbose_flag = False
-for arg in sys.argv[2:]:
-    if arg == "--verbose":
-        has_verbose_flag = True
-
-# Initialize the client
-client = genai.Client(api_key=GEMINI_API_KEY)
 
 def main():
-    messages = [
-        types.Content(role="user", parts=[types.Part(text=user_prompt)])
-    ]
-    
-    system_prompt = """
-        You are a helpful AI coding agent.
+    # Initialize the environment variables
+    env_variables = EnvVariables()
 
-        When a user asks a question or makes a request, make a function call plan. You can perform the following operations:
+    # Initialize the system arguments
+    sys_args = SystemArgs()
+    has_verbose_flag = sys_args.has_verbose_flag
+    user_prompt = sys_args.user_prompt
 
-        - List files and directories
-        - Read file contents
-        - Execute Python files with optional arguments
-        - Write or overwrite files
+    # Initialize the client
+    client = genai.Client(api_key=env_variables.GEMINI_API_KEY)
 
-        All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
-    """
+    try:
+        response = run_agent(
+            client=client,
+            env_variables=env_variables,
+            has_verbose_flag=has_verbose_flag,
+            user_prompt=user_prompt,
+        )
+    except Exception as error:
+        print("\nSomething went wrong during the execution of the agent:\n")
+        print(f"Error: {error}")
+        exit(1)
 
-    available_functions = types.Tool(
-        function_declarations=[
-            schema_get_files_info,
-            schema_get_file_content,
-            schema_run_python_file,
-            schema_write_file,
-        ]
-    )
-    
-    ai_response = client.models.generate_content(
-        config=types.GenerateContentConfig(
-            system_instruction=system_prompt,
-            tools=[available_functions],
-        ),
-        contents=messages,
-        model=GEMINI_MODEL, 
-    )
-    print("Response")
-    if ai_response.function_calls is not None and len(ai_response.function_calls) > 0:
-        for function_call_part in ai_response.function_calls:
-            print(f"Calling function: {function_call_part.name}({function_call_part.args})")
-    else:
-        print(ai_response.text)        
-    
-    if has_verbose_flag:
-        print("--------------------------------")
-        print(f"User prompt: {user_prompt}")
-        print(f"Prompt tokens: {ai_response.usage_metadata.prompt_token_count}")
-        print(f"Response tokens: {ai_response.usage_metadata.candidates_token_count}")
+    print(f"Final response: {response}")
 
 
 if __name__ == "__main__":
