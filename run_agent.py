@@ -34,7 +34,7 @@ def run_agent(
         ]
     )
 
-    while final_response is None or loop_count <= AGENT_TIMEOUT_COUNT:
+    while final_response is None and loop_count <= AGENT_TIMEOUT_COUNT:
         # Communicate with the AI
         ai_response = client.models.generate_content(
             config=types.GenerateContentConfig(
